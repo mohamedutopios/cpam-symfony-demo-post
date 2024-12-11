@@ -1,0 +1,27 @@
+app_post:
+  path: /post
+  controller: App\Controller\PostController::index
+
+post_show:
+  path: /post/{id}
+  controller: App\Controller\PostController::show
+  requirements:
+    id: '\d+'
+
+post_create:
+  path: /post/create
+  controller: App\Controller\PostController::create
+
+post_edit:
+  path: /post/{id}/edit
+  controller: App\Controller\PostController::edit
+  requirements:
+    id: '\d+'
+
+post_delete:
+  path: /post/{id}/delete
+  controller: App\Controller\PostController::delete
+  requirements:
+    id: '\d+'
+
+

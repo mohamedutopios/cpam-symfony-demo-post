@@ -25,8 +25,7 @@ class PostController extends AbstractController
 
     }
 
-    // Route pour voir un post spécifique, avec validation que l'id est numérique
-    #[Route("/post/{id}", name: "post_show", requirements: ["id" => "\d+"])]
+   // #[Route("/post/{id}", name: "post_show", requirements: ["id" => "\d+"])]
     public function show(Request $request, int $id): Response
     {
         // Assurez-vous que les données sont initialisées
@@ -51,7 +50,7 @@ class PostController extends AbstractController
     }
 
 
-    #[Route('/post', name: 'app_post')]
+   // #[Route('/post', name: 'app_post')]
     public function index(Request $request): Response
     {
         $this->initialize($request);
@@ -62,7 +61,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route("/post/create", name: 'post_create')]
+    //#[Route("/post/create", name: 'post_create')]
     public function create(Request $request): Response
     {
         $this->initialize($request);
@@ -85,7 +84,7 @@ class PostController extends AbstractController
 
     }
 
-    #[Route("/post/{id}/edit", name: "post_edit")]
+   // #[Route("/post/{id}/edit", name: "post_edit")]
     public function edit(Request $request, int $id): Response
     {
         $this->initialize($request);
@@ -113,7 +112,7 @@ class PostController extends AbstractController
     }
 
 
-    #[Route("/post/{id}/delete", name: "post_delete")]
+   // #[Route("/post/{id}/delete", name: "post_delete")]
     public function delete(Request $request, int $id): Response
     {
         $this->initialize($request);
