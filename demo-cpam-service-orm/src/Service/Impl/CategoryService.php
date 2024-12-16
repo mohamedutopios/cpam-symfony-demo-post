@@ -6,6 +6,8 @@ use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Service\CategoryServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\InvalidArgumentException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryService implements CategoryServiceInterface
 {
@@ -53,6 +55,11 @@ private EntityManagerInterface $entityManager;
 
     public function deleteCategory(int $id): void
     {
-        // TODO: Implement deleteCategory() method.
+      $category = $this->getCategoryById($id);
+      if(!$category){
+          throw new InvalidArgumentException("Category Id not found");
+      }
+      $this->entityManager->remove($category);
+      $this->entityManager->flush();
     }
 }
