@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\PostDTO;
 use App\Entity\Post;
 
 interface PostServiceInterface
@@ -11,7 +12,7 @@ interface PostServiceInterface
 
     public function getPostById(int $id): ?Post;
 
-    public function addPost(string $title, string $content, ): void;
+    public function addPost(PostDTO $postDTO): void;
 
 
     public function deletePost(int $id): void;

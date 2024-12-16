@@ -15,7 +15,14 @@ services:
         alias: App\Service\Impl\PostService
         public: true
 
+    App\Service\CategoryServiceInterface:
+        alias: App\Service\Impl\CategoryService
+        public: true
+
     App\Service\Impl\PostService:
+        public: true
+
+    App\Service\Impl\CategoryService:
         public: true
 
     Symfony\Component\HttpFoundation\Session\SessionInterface:

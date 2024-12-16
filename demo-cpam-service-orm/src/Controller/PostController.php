@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 
+use App\DTO\PostDTO;
+use App\Service\CategoryServiceInterface;
 use App\Service\PostServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,9 +15,12 @@ class PostController extends AbstractController
 {
     private PostServiceInterface $postManager;
 
-    public function __construct(PostServiceInterface $postManager)
+    private CategoryServiceInterface $categoryService;
+
+    public function __construct(PostServiceInterface $postManager, CategoryServiceInterface $categoryService)
     {
         $this->postManager = $postManager;
+        $this->categoryService = $categoryService;
 
     }
     #[Route('/post', name: 'post_index', methods: ['GET'])]
@@ -34,30 +39,37 @@ class PostController extends AbstractController
         $post = $this->postManager->getPostById($id);
 
         if (!$post) {
-            throw $this->createNotFoundException(sprintf('The post with ID %d was not found.', $id));
+            throw $this->createNotFoundException(sprintf('Post with ID %d not found.', $id));
         }
 
         if ($request->isMethod('POST')) {
             $title = $request->request->get('title');
             $content = $request->request->get('content');
+            $categoryId = $request->request->get('category_id');
 
-            // Validation des données
-            if (empty($title) || empty($content)) {
-                $this->addFlash('error', 'Both title and content are required.');
+            if (empty($title) || empty($content) || empty($categoryId)) {
+                $this->addFlash('error', 'Title, content, and category are required.');
                 return $this->redirectToRoute('post_edit', ['id' => $id]);
             }
 
-            // Mettre à jour le post
-            $this->postManager->updatePost($post, $title, $content);
-
-            $this->addFlash('success', 'Post updated successfully!');
-            return $this->redirectToRoute('post_show', ['id' => $id]);
+            try {
+                $postDTO = new PostDTO($title, $content, (int)$categoryId);
+                $this->postManager->updatePost($post, $postDTO);
+                $this->addFlash('success', 'Post updated successfully!');
+                return $this->redirectToRoute('post_index');
+            } catch (\InvalidArgumentException $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
         }
+
+        $categories = $this->categoryManager->getAllCategories();
 
         return $this->render('post/edit.html.twig', [
             'post' => $post,
+            'categories' => $categories,
         ]);
     }
+
 
     #[Route('/post/create', name: 'post_create', methods: ['GET', 'POST'])]
     public function create(Request $request): Response
@@ -65,22 +77,29 @@ class PostController extends AbstractController
         if ($request->isMethod('POST')) {
             $title = $request->request->get('title');
             $content = $request->request->get('content');
+            $categoryId = $request->request->get('category_id');
 
-            // Validation des données
-            if (empty($title) || empty($content)) {
-                $this->addFlash('error', 'Both title and content are required.');
+            if (empty($title) || empty($content) || empty($categoryId)) {
+                $this->addFlash('error', 'Title, content, and category are required.');
                 return $this->redirectToRoute('post_create');
             }
 
-            $this->postManager->addPost($title, $content);
-
-            $this->addFlash('success', 'Post created successfully!');
-            return $this->redirectToRoute('post_index');
+            try {
+                $postDTO = new PostDTO($title, $content, (int)$categoryId);
+                $this->postManager->addPost($postDTO);
+                $this->addFlash('success', 'Post created successfully!');
+                return $this->redirectToRoute('post_index');
+            } catch (\InvalidArgumentException $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
         }
 
-        return $this->render('post/create.html.twig');
-    }
+        $categories = $this->categoryService->getAllCategories();
 
+        return $this->render('post/create.html.twig', [
+            'categories' => $categories,
+        ]);
+    }
     #[Route('/post/delete/{id}', name: 'post_delete', methods: ['POST'])]
     public function delete(int $id): Response
     {

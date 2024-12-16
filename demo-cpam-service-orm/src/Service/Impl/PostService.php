@@ -2,8 +2,11 @@
 
 namespace App\Service\Impl;
 
+use App\DTO\PostDTO;
 use App\Entity\Post;
+use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
+use App\Service\CategoryServiceInterface;
 use App\Service\PostServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -11,12 +14,14 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class PostService implements PostServiceInterface
 {
     private PostRepository $postRepository;
+    private CategoryServiceInterface $categoryService;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(PostRepository $postRepository, EntityManagerInterface $entityManager)
+    public function __construct(PostRepository $postRepository, EntityManagerInterface $entityManager, CategoryServiceInterface $categoryService)
     {
         $this->postRepository = $postRepository;
         $this->entityManager = $entityManager;
+        $this->$categoryService = $categoryService;
     }
 
 
@@ -32,22 +37,32 @@ class PostService implements PostServiceInterface
     }
 
 
-    public function addPost(string $title, string $content): void
+    public function addPost(PostDTO $postDTO): void
     {
+        $category = $this->categoryService->getCategoryById($postDTO->getCategoryId());
+
         $post = new Post();
-        $post->setTitle($title)
-            ->setContent($content)
-            ->setCreatedAt(new \DateTime());
+        $post->setTitle($postDTO->getTitle())
+            ->setContent($postDTO->getContent())
+            ->setCreatedAt(new \DateTime())
+            ->setCategory($category);
 
         $this->entityManager->persist($post);
         $this->entityManager->flush();
     }
 
 
-    public function updatePost(Post $post, string $title, string $content): void
+    public function updatePost(Post $post, PostDTO $postDTO): void
     {
-        $post->setTitle($title)
-            ->setContent($content);
+        $category = $this->categoryService->getCategoryById($postDTO->categoryId);
+
+        if (!$category) {
+            throw new \InvalidArgumentException('Category not found.');
+        }
+
+        $post->setTitle($postDTO->title)
+            ->setContent($postDTO->content)
+            ->setCategory($category);
 
         $this->entityManager->flush();
     }
