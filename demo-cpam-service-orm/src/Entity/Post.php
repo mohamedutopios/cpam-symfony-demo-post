@@ -21,6 +21,10 @@ class Post
     #[ORM\Column(type: "datetime")]
     private $createdAt;
 
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: "posts")]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
+
     public function getId(): ?int
     {
         return $this->id;
