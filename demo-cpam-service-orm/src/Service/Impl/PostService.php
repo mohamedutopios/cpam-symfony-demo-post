@@ -19,19 +19,19 @@ class PostService implements PostServiceInterface
         $this->entityManager = $entityManager;
     }
 
-    // Récupère tous les posts
+
     public function getPosts(): array
     {
         return $this->postRepository->findAll();
     }
 
-    // Récupère un post par ID
+
     public function getPostById(int $id): ?Post
     {
         return $this->postRepository->find($id);
     }
 
-    // Ajoute un nouveau post
+
     public function addPost(string $title, string $content): void
     {
         $post = new Post();
@@ -43,16 +43,15 @@ class PostService implements PostServiceInterface
         $this->entityManager->flush();
     }
 
-    // Met à jour un post existant
+
     public function updatePost(Post $post, string $title, string $content): void
     {
         $post->setTitle($title)
             ->setContent($content);
 
-        $this->entityManager->flush(); // Sauvegarde les modifications
+        $this->entityManager->flush();
     }
 
-    // Supprime un post par ID
     public function deletePost(int $id): void
     {
         $post = $this->postRepository->find($id);
@@ -62,8 +61,4 @@ class PostService implements PostServiceInterface
         }
     }
 
-    public function initializeData(): void
-    {
-        // TODO: Implement initializeData() method.
-    }
 }

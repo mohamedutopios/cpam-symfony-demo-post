@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Post;
+
 use App\Service\PostServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,49 +18,26 @@ class PostController extends AbstractController
         $this->postManager = $postManager;
 
     }
-
     #[Route('/post', name: 'post_index', methods: ['GET'])]
     public function index(): Response
     {
-        $posts =  $this->postManager->getPosts();
-
-        if(!$posts){
-            $this->postManager->initializeData();
-        }
+        $posts = $this->postManager->getPosts();
 
         return $this->render('post/index.html.twig', [
             'posts' => $posts,
         ]);
     }
 
-    #[Route('/post/{id}', name: 'post_show', methods: ['GET'])]
-    public function show(int $id): Response
-    {
-        $post = $this->postManager->getPostById($id);
-
-        if (!$post) {
-            throw $this->createNotFoundException(sprintf('The post with ID %d was not found.', $id));
-        }
-
-        return $this->render('post/show.html.twig', [
-            'post' => $post,
-        ]);
-    }
-
-
     #[Route('/post/{id}/edit', name: 'post_edit', methods: ['GET', 'POST'])]
     public function edit(int $id, Request $request): Response
     {
-        // Récupérer le post par son ID
         $post = $this->postManager->getPostById($id);
 
-        // Vérifier si le post existe
         if (!$post) {
             throw $this->createNotFoundException(sprintf('The post with ID %d was not found.', $id));
         }
 
         if ($request->isMethod('POST')) {
-            // Récupérer les données du formulaire
             $title = $request->request->get('title');
             $content = $request->request->get('content');
 
@@ -71,13 +48,9 @@ class PostController extends AbstractController
             }
 
             // Mettre à jour le post
-            $posts = $this->postManager->getPosts();
-            $posts[$id]->setTitle($title);
-            $posts[$id]->setContent($content);
+            $this->postManager->updatePost($post, $title, $content);
 
-            $this->postManager->initializeData(); // Réinitialiser les données dans la session
             $this->addFlash('success', 'Post updated successfully!');
-
             return $this->redirectToRoute('post_show', ['id' => $id]);
         }
 
@@ -85,8 +58,6 @@ class PostController extends AbstractController
             'post' => $post,
         ]);
     }
-
-
 
     #[Route('/post/create', name: 'post_create', methods: ['GET', 'POST'])]
     public function create(Request $request): Response
@@ -116,16 +87,28 @@ class PostController extends AbstractController
         $post = $this->postManager->getPostById($id);
 
         if (!$post) {
-            $this->addFlash('error', sprintf('The post with ID %d was not found.', $id));
+            $this->addFlash('error', $this->sprintf('The post with ID %d was not found.', $id));
             return $this->redirectToRoute('post_index');
         }
 
         $this->postManager->deletePost($id);
 
-        $this->addFlash('success', sprintf('Post with ID %d was deleted successfully.', $id));
+        $this->addFlash('success', $this->sprintf('Post with ID %d was deleted successfully.', $id));
         return $this->redirectToRoute('post_index');
     }
 
+    #[Route('/post/{id}', name: 'post_show', methods: ['GET'])]
+    public function show(int $id): Response
+    {
+        $post = $this->postManager->getPostById($id);
 
+        if (!$post) {
+            throw $this->createNotFoundException(sprintf('The post with ID %d was not found.', $id));
+        }
+
+        return $this->render('post/show.html.twig', [
+            'post' => $post,
+        ]);
+    }
 
 }
