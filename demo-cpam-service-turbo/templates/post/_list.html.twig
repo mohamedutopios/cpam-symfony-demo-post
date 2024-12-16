@@ -1,10 +1,4 @@
-{# {% extends 'base.html.twig' %}
-
-{% block body %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h2 class="text-center mb-4">All Posts</h2>
+<turbo-frame id="posts">
     <table class="table">
         <thead>
         <tr>
@@ -36,29 +30,4 @@
         </tbody>
     </table>
 
-            <div class="text-center">
-                <a href="{{ path('post_create') }}" class="btn btn-primary">Create Post</a>
-            </div>
-
-{% endblock %} #}
-
-{% extends 'base.html.twig' %}
-
-{% block body %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h2 class="text-center mb-4">All Posts</h2>
-            <turbo-frame id="posts" src="{{ path('post_list_frame') }}" >
-                <p>Loading posts...</p>
-            </turbo-frame>
-            <turbo-frame id="post-form" >
-                <a href="{{ path('post_create') }}" class="btn btn-primary">Create Post</a>
-            </turbo-frame>
-            <turbo-frame id="post-details" >
-
-            </turbo-frame>
-        </div>
-    </div>
-</div>
-{% endblock %}
+</turbo-frame>
