@@ -4,12 +4,11 @@ namespace App\Service\Impl;
 
 use App\DTO\PostDTO;
 use App\Entity\Post;
-use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
 use App\Service\CategoryServiceInterface;
 use App\Service\PostServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 
 class PostService implements PostServiceInterface
 {
@@ -21,7 +20,7 @@ class PostService implements PostServiceInterface
     {
         $this->postRepository = $postRepository;
         $this->entityManager = $entityManager;
-        $this->$categoryService = $categoryService;
+        $this->categoryService = $categoryService;
     }
 
 

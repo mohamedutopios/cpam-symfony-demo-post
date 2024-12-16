@@ -18,7 +18,14 @@
                                 <label for="title" class="form-label">Content</label>
                                 <textarea class="form-control" name="content" id="content" rows="3"></textarea>
                             </div>
-
+                            <div class="mb-3">
+                                <label for="category_id" class="form-label">Category</label>
+                                <select id="category_id" name="category_id" class="form-control" required>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-success btn-lg">Create</button>
                                 <a href="{{ path('post_index') }}" class="btn btn-secondary btn-lg ms-2">Cancel</a>

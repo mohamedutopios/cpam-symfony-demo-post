@@ -7,6 +7,7 @@ use App\DTO\PostDTO;
 use App\Service\CategoryServiceInterface;
 use App\Service\PostServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -62,7 +63,7 @@ class PostController extends AbstractController
             }
         }
 
-        $categories = $this->categoryManager->getAllCategories();
+        $categories = $this->categoryService->getAllCategories();
 
         return $this->render('post/edit.html.twig', [
             'post' => $post,
@@ -100,19 +101,20 @@ class PostController extends AbstractController
             'categories' => $categories,
         ]);
     }
-    #[Route('/post/delete/{id}', name: 'post_delete', methods: ['POST'])]
-    public function delete(int $id): Response
+
+    #[Route('/post/{id}/delete', name: 'post_delete', methods: ['POST'])]
+    public function delete(int $id): RedirectResponse
     {
         $post = $this->postManager->getPostById($id);
 
         if (!$post) {
-            $this->addFlash('error', $this->sprintf('The post with ID %d was not found.', $id));
+            $this->addFlash('error', sprintf('The post with ID %d was not found.', $id));
             return $this->redirectToRoute('post_index');
         }
 
         $this->postManager->deletePost($id);
+        $this->addFlash('success', sprintf('Post with ID %d was deleted successfully.', $id));
 
-        $this->addFlash('success', $this->sprintf('Post with ID %d was deleted successfully.', $id));
         return $this->redirectToRoute('post_index');
     }
 
