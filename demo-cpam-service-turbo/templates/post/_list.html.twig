@@ -19,7 +19,7 @@
                 <td>{{ post.content|length > 30 ? post.content[:30] ~ '...' : post.content }}</td>
                 <td>{{ post.createdAt|date("Y-m-d H:i") }}</td>
                 <td>
-                    <a href="{{ path('post_show', {id: post.id}) }}" class="btn btn-info btn-sm">View</a>
+                    <a href="{{ path('post_show', {id: post.id}) }}" class="btn btn-info btn-sm" data-turbo-frame="post-details">View</a>
                     <a href="{{ path('post_edit', {id: post.id}) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form method="post" action="{{ path('post_delete', {id: post.id}) }}" style="display:inline;">
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>

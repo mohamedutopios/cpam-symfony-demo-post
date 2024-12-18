@@ -24,6 +24,17 @@ class PostController extends AbstractController
         $this->categoryService = $categoryService;
 
     }
+
+    #[Route('/posts/frame', name: 'post_list_frame', methods: ['GET'])]
+    public function listFrame(Request $request): Response
+    {
+        $posts = $this->postManager->getPosts();
+
+        return $this->render('post/_list.html.twig', [
+            'posts' => $posts,
+        ]);
+    }
+
     #[Route('/post', name: 'post_index', methods: ['GET'])]
     public function index(): Response
     {
@@ -75,14 +86,22 @@ class PostController extends AbstractController
     #[Route('/post/create', name: 'post_create', methods: ['GET', 'POST'])]
     public function create(Request $request): Response
     {
+        $categories = $this->categoryService->getAllCategories();
+
+
         if ($request->isMethod('POST')) {
             $title = $request->request->get('title');
             $content = $request->request->get('content');
             $categoryId = $request->request->get('category_id');
 
             if (empty($title) || empty($content) || empty($categoryId)) {
-                $this->addFlash('error', 'Title, content, and category are required.');
-                return $this->redirectToRoute('post_create');
+                return $this->render('post/_form.html.twig', [
+                    'categories' => $categories, // Liste des catégories pour le formulaire
+                    'post' => null, // Aucun post n'est en cours de modification
+                    'action' => $this->generateUrl('post_create'), // URL pour soumettre le formulaire
+                    'button_label' => 'Create', // Texte du bouton d'action
+                    'error' => 'All fields are required.', // Message d'erreur à afficher
+                ]);
             }
 
             try {
@@ -97,7 +116,7 @@ class PostController extends AbstractController
 
         $categories = $this->categoryService->getAllCategories();
 
-        return $this->render('post/create.html.twig', [
+        return $this->render('post/_form.html.twig', [
             'categories' => $categories,
         ]);
     }
@@ -127,7 +146,7 @@ class PostController extends AbstractController
             throw $this->createNotFoundException(sprintf('The post with ID %d was not found.', $id));
         }
 
-        return $this->render('post/show.html.twig', [
+        return $this->render('post/_details.html.twig', [
             'post' => $post,
         ]);
     }
