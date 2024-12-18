@@ -130,7 +130,10 @@ class PostController extends AbstractController
         }
 
         return $this->render('post/_form.html.twig', [
-            'categories' => $categories,
+            'categories' => $categories, // Liste des catégories pour le formulaire
+            'post' => null, // Aucun post n'est en cours de modification
+            'action' => $this->generateUrl('post_create'), // URL pour soumettre le formulaire
+            'button_label' => 'Create', // Texte du bouton d'action
         ]);
     }
 
