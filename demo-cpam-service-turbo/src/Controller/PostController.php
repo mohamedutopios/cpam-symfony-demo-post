@@ -60,27 +60,42 @@ class PostController extends AbstractController
             $categoryId = $request->request->get('category_id');
 
             if (empty($title) || empty($content) || empty($categoryId)) {
-                $this->addFlash('error', 'Title, content, and category are required.');
-                return $this->redirectToRoute('post_edit', ['id' => $id]);
+                return $this->render('post/_form.html.twig', [
+                    'error' => 'Title, content, and category are required.',
+                    'categories' => $this->categoryService->getAllCategories(),
+                    'post' => $post,
+                    'action' => $this->generateUrl('post_edit', ['id' => $id]),
+                    'button_label' => 'Update',
+                ]);
             }
 
             try {
                 $postDTO = new PostDTO($title, $content, (int)$categoryId);
                 $this->postManager->updatePost($post, $postDTO);
-                $this->addFlash('success', 'Post updated successfully!');
-                return $this->redirectToRoute('post_index');
+
+                // Réutilisation du fichier create_and_list_stream.html.twig
+                return $this->render('post/create_and_list_stream.html.twig', [
+                    'posts' => $this->postManager->getPosts(),
+                ], new Response('', 200, ['Content-Type' => 'text/vnd.turbo-stream.html']));
             } catch (\InvalidArgumentException $e) {
-                $this->addFlash('error', $e->getMessage());
+                return $this->render('post/_form.html.twig', [
+                    'error' => $e->getMessage(),
+                    'categories' => $this->categoryService->getAllCategories(),
+                    'post' => $post,
+                    'action' => $this->generateUrl('post_edit', ['id' => $id]),
+                    'button_label' => 'Update',
+                ]);
             }
         }
 
-        $categories = $this->categoryService->getAllCategories();
-
-        return $this->render('post/edit.html.twig', [
+        return $this->render('post/_form.html.twig', [
+            'categories' => $this->categoryService->getAllCategories(),
             'post' => $post,
-            'categories' => $categories,
+            'action' => $this->generateUrl('post_edit', ['id' => $id]),
+            'button_label' => 'Update',
         ]);
     }
+
 
 
     #[Route('/post/create', name: 'post_create', methods: ['GET', 'POST'])]
@@ -104,17 +119,15 @@ class PostController extends AbstractController
                 ]);
             }
 
-            try {
+
                 $postDTO = new PostDTO($title, $content, (int)$categoryId);
                 $this->postManager->addPost($postDTO);
-                $this->addFlash('success', 'Post created successfully!');
-                return $this->redirectToRoute('post_index');
-            } catch (\InvalidArgumentException $e) {
-                $this->addFlash('error', $e->getMessage());
-            }
-        }
 
-        $categories = $this->categoryService->getAllCategories();
+                return $this->render('post/create_and_list_stream.html.twig', [
+                    'posts' => $this->postManager->getPosts(),
+                ], new Response('', 200,['Content-Type' => 'text/vnd.turbo-stream.html']));
+
+        }
 
         return $this->render('post/_form.html.twig', [
             'categories' => $categories,
@@ -122,19 +135,20 @@ class PostController extends AbstractController
     }
 
     #[Route('/post/{id}/delete', name: 'post_delete', methods: ['POST'])]
-    public function delete(int $id): RedirectResponse
+    public function delete(int $id): Response
     {
         $post = $this->postManager->getPostById($id);
 
         if (!$post) {
-            $this->addFlash('error', sprintf('The post with ID %d was not found.', $id));
-            return $this->redirectToRoute('post_index');
+            return $this->render('post/_list.html.twig', [
+                'error' => 'Post with ID ' . $id . ' not found.',
+                'posts' => $this->postManager->getPosts(),
+            ]);
         }
-
         $this->postManager->deletePost($id);
-        $this->addFlash('success', sprintf('Post with ID %d was deleted successfully.', $id));
-
-        return $this->redirectToRoute('post_index');
+        return $this->render('post/_list.html.twig', [
+            'posts' => $this->postManager->getPosts(),
+        ]);
     }
 
     #[Route('/post/{id}', name: 'post_show', methods: ['GET'])]

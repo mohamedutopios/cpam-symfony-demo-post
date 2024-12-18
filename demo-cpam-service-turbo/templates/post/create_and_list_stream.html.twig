@@ -1,0 +1,10 @@
+<turbo-stream action="update" target="posts">
+    <template>
+        {%  include 'post/_list.html.twig' with { posts: posts } %}
+    </template>
+</turbo-stream>
+<turbo-stream action="update" target="post-form">
+    <template>
+        <a href="{{ path('post_create') }}" class="btn btn-primary">Create Post</a>
+    </template>
+</turbo-stream>

@@ -1,27 +1,26 @@
 <turbo-frame id="post-form">
-    <form method="post" action="{{ path('post_create') }}" data-turbo-frame="post-form">
+    <form method="post" action="{{ action }}" class="my-4" data-turbo-frame="post-form">
+        {% if error is defined %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
-            <input type="text" name="title" class="form-control" id="title" aria-describedby="emailHelp"
-                   placeholder="Post 3">
+            <input type="text" id="title" name="title" class="form-control" value="{{ post.title|default('') }}" required >
         </div>
         <div class="mb-3">
-            <label for="title" class="form-label">Content</label>
-            <textarea class="form-control" name="content" id="content" rows="3"></textarea>
+            <label for="content" class="form-label">Content</label>
+            <textarea id="content" name="content" class="form-control" rows="5" required>{{ post.content|default('') }}</textarea>
         </div>
         <div class="mb-3">
             <label for="category_id" class="form-label">Category</label>
             <select id="category_id" name="category_id" class="form-control" required>
                 {% for category in categories %}
-                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    <option value="{{ category.id }}" {% if post and post.category and category.id == post.category.id %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
-        <div class="text-center">
-            <button type="submit" class="btn btn-success btn-lg">Create</button>
-            <a href="{{ path('post_index') }}" class="btn btn-secondary btn-lg ms-2">Cancel</a>
-        </div>
-
+        <button type="submit" class="btn btn-primary">{{ button_label }}</button>
     </form>
-
 </turbo-frame>
