@@ -1,0 +1,23 @@
+{% if href is defined %}
+    <a
+            href="{{ href }}"
+            class="btn {{ class|default('btn-primary') }}"
+            data-turbo-frame="{{ turbo_frame|default('') }}"
+    >
+        {{ label|default('Button') }}
+    </a>
+{% else %}
+    <button
+            type="{{ type|default('button') }}"
+            class="btn {{ class|default('btn-primary') }}"
+            {% if turbo_frame is defined %} data-turbo-frame="{{ turbo_frame }}" {% endif %}
+            {% if action is defined %} data-action="{{ action }}" {% endif %}
+            {% if data is defined %}
+                {% for key, value in data %}
+                    data-{{ key }}="{{ value }}"
+                {% endfor %}
+            {% endif %}
+    >
+        {{ label|default('Button') }}
+    </button>
+{% endif %}

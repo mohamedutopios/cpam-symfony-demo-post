@@ -2,6 +2,7 @@
     "require": {
         "symfony/asset-mapper": "^7.2",
         "scssphp/scssphp": "^1.13",
-        "matthiasmullie/minify": "^1.3"
+        "matthiasmullie/minify": "^1.3",
+        "symfony/ux-twig-component": "^2.22"
     }
 }

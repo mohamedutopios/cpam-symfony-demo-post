@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div>
+        <h1>Formations Disponibles</h1>
+        <div class="d-flex flex-wrap justify-content-center">
+            {% for formation in formations %}
+                <div class="card" style="width: 18rem; margin: 1rem;">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ formation.title }}</h2>
+                        <div class="card-actions">
+                            <form 
+                                action="{{ path('formation_subscribe', { id: formation.id }) }}" 
+                                method="post" 
+                                style="margin-bottom: 0.5rem;">
+                                <button class="btn btn-primary w-100" type="submit">S'inscrire</button>
+                            </form>
+                            <form 
+                                action="{{ path('formation_unsubscribe', { id: formation.id }) }}" 
+                                method="post">
+                                <button class="btn btn-danger w-100" type="submit">Se désinscrire</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

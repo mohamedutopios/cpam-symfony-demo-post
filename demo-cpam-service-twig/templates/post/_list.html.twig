@@ -1,0 +1,51 @@
+<turbo-frame id="posts">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Title</th>
+            <th scope="col">Category</th>
+            <th scope="col">Content</th>
+            <th scope="col">CreatedAt</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for post in posts %}
+            <tr>
+                <td>{{ post.id }}</td>
+                <td>{{ post.title }}</td>
+                <td>{{ post.category.name }}</td>
+                <td>{{ post.content|length > 30 ? post.content[:30] ~ '...' : post.content }}</td>
+                <td>{{ post.createdAt|date("Y-m-d H:i") }}</td>
+                <td>
+                    <twig:button
+                            label="View"
+                            href="{{ path('post_show', {id: post.id}) }}"
+                            class="btn-info btn-sm"
+                            turbo_frame="post-details"
+                    />
+
+                    <twig:button
+                            label="Edit"
+                            href="{{ path('post_edit', {id: post.id}) }}"
+                            class="btn-warning btn-sm"
+                            turbo_frame="post-form"
+                    />
+
+                    <form method="post" action="{{ path('post_delete', {id: post.id}) }}" style="display:inline;" data-turbo-frame="posts">
+                        <twig:button
+                                label="Delete"
+                                type="submit"
+                                class="btn-danger btn-sm"
+                                data="{ id: post.id }"
+                                action="delete-controller#confirm"
+                        />
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</turbo-frame>

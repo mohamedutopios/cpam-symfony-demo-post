@@ -1,0 +1,13 @@
+framework:
+    asset_mapper:
+        paths:
+            - assets/
+        missing_import_mode: strict
+        extensions:
+            scss: App\Asset\ScssCompiler
+            css: App\Asset\CssMinifier
+
+when@prod:
+    framework:
+        asset_mapper:
+            missing_import_mode: warn
